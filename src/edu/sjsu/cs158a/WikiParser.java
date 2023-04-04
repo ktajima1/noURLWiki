@@ -20,6 +20,8 @@ public class WikiParser extends HTMLEditorKit.ParserCallback {
     private String title;
     /* A status boolean used to store the title of the wikipedia page */
     private Boolean inTitle = false;
+    /* If "HTTP/1.1 404 Not Found" is returned, this boolean will be set to true and Wiki will throw UnknownHostException */
+    private Boolean notFound = false;
     /* duplicateChecker hash set used for checking whether a link is unique and not a duplicate */
     private HashSet<String> duplicateChecker = new HashSet<>();
     /* children arraylist stores all redirect links on a Wikipedia page. */
@@ -75,13 +77,21 @@ public class WikiParser extends HTMLEditorKit.ParserCallback {
         if (inTitle) {
             title = new String(data);
         }
+        if (new String(data).contains("HTTP/1.1 404 Not Found")) {
+            notFound=true;
+        }
 //        System.out.println("Got text: " + new String(data));
+
         super.handleText(data, pos);
     }
 
     /* Return title of current page */
     public String getTitle() {
         return title;
+    }
+    /* Return if parsed page was found or not */
+    public boolean ifNotFound() {
+        return notFound;
     }
     /* Return an arraylist of all unique hyperlinks in the wikipedia page */
     public ArrayList<String> getChildren() {

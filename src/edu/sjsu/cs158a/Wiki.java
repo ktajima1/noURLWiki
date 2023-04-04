@@ -67,7 +67,7 @@ public class Wiki {
          * children). The WikiParser object has getter methods for the title and children so that the parseFor() method
          * can be called once more on the children arrayList to search for the target wikipedia page */
         WikiParser parpar = new WikiParser();
-        String potentiallyInvalidURL = "";
+        String potentiallyInvalidURL = "https://en.wikipedia.org/wiki/"+subject;
         /* This try-catch block is from Ben Reed's WebDump java class and has been modified for this assignment:
          * https://github.com/breed/CS158A-SP23-class/blob/main/web/edu/sjsu/cs158a/web/WebDump.java */
         try {
@@ -87,9 +87,8 @@ public class Wiki {
             //shuts down the outputstream of a socket so that the socket can only receive inputs from the server; signals to server
             //that the outputstream is closed and that the client will not be sending anything
             sock.shutdownOutput();
-
             InputStreamReader isr = new InputStreamReader(sock.getInputStream());
-
+//            sock.getInputStream().transferTo(System.out);
             /* The delegator allows us to parse the content of a file */
             ParserDelegator delegator = new ParserDelegator();
             //calling parse() will take an input and extract pieces from it according to some structure
@@ -98,6 +97,10 @@ public class Wiki {
             //redirect to another wikipedia page (which will be collected in an arraylist called "children." WikiParser
             //has a getChildren() method that contains all wikipedia pages that the parsed page links to
             delegator.parse(isr, parpar, true);
+            /* If the searched page doesn't exist, as in the HTTP request returns a "HTTP/1.1 404 Not Found", print cannot found and exit */
+            if(parpar.ifNotFound()) {
+                throw new UnknownHostException();
+            }
             /* If "doPrintTitle" is true, print the title of the current wikipedia page */
             if (doPrintTitle) {
                 System.out.println("Searching: " + parpar.getTitle());
