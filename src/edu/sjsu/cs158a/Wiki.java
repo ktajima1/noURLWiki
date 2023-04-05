@@ -78,7 +78,8 @@ public class Wiki {
             int port = 443;
 
             Socket sock = SSLSocketFactory.getDefault().createSocket(host, port);
-
+            /* Output this message to the server to retrieve the desired wikipedia page. "\r\n" must also be sent to the server
+             * in order to correctly retrieve page */
             String msg = "GET /wiki/" + subject +" HTTP/1.1\n" +
                     "Host: en.wikipedia.org\n";
             var os = sock.getOutputStream();
@@ -88,7 +89,6 @@ public class Wiki {
             //that the outputstream is closed and that the client will not be sending anything
             sock.shutdownOutput();
             InputStreamReader isr = new InputStreamReader(sock.getInputStream());
-//            sock.getInputStream().transferTo(System.out);
             /* The delegator allows us to parse the content of a file */
             ParserDelegator delegator = new ParserDelegator();
             //calling parse() will take an input and extract pieces from it according to some structure
